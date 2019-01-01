@@ -1,0 +1,91 @@
+Sub Homework()
+
+'Create a script that will loop through each year of stock data and grab the total amount of volume each stock had over the year.
+'You will need to display the ticker symbol to coincide with the total volume.
+'Volume was how many shares were bought that day
+
+For Each ws In Worksheets
+
+    Dim ticker As String
+    Dim totalvolume As Double
+    Dim tickerrow As Integer
+    Dim openprice As Double
+    Dim closingprice As Double
+
+    lastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+    tickerrow = 2
+
+    ticker = ws.Cells(2, 1).Value
+    totalvolume = ws.Cells(2, 7).Value
+    openprice = ws.Cells(2, 3).Value
+    closingprice = ws.Cells(2, 6).Value
+
+    
+    For i = 3 To lastRow
+
+        cellticker = ws.Cells(i, 1).Value
+    
+        If cellticker <> ticker Then
+            ws.Cells(tickerrow, 9).Value = ticker
+            yearlychange = closingprice - openprice
+            ws.Cells(tickerrow, 10).Value = yearlychange
+            
+            
+            If openprice = 0 Then
+                ws.Cells(tickerrow, 11).Value = 0
+            Else
+                ws.Cells(tickerrow, 11).Value = (closingprice - openprice) / openprice
+            End If
+            ws.Cells(tickerrow, 12).Value = totalvolume
+            
+            'color
+            If yearlychange < 0 Then
+                ws.Range("J" + CStr(tickerrow)).Interior.ColorIndex = 3 ' Red
+            Else
+                ws.Range("J" + CStr(tickerrow)).Interior.ColorIndex = 10 ' Green
+            End If
+            
+            ' process next ticker
+            ticker = cellticker
+            tickerrow = tickerrow + 1
+            totalvolume = 0
+            
+            openprice = ws.Cells(i, 3).Value
+            closingprice = ws.Cells(i, 6).Value
+            
+        End If
+
+        volume = ws.Cells(i, 7).Value
+        totalvolume = totalvolume + volume
+        closingprice = ws.Cells(i, 6).Value
+    Next i
+    
+    ws.Cells(tickerrow, 9).Value = ticker
+    yearlychange = closingprice - openprice
+    ws.Cells(tickerrow, 10).Value = yearlychange
+            
+            
+    If openprice = 0 Then
+        ws.Cells(tickerrow, 11).Value = 0
+    Else
+        ws.Cells(tickerrow, 11).Value = (closingprice - openprice) / openprice
+    End If
+    ws.Cells(tickerrow, 12).Value = totalvolume
+            
+    'Color
+    If yearlychange < 0 Then
+        ws.Range("J" + CStr(tickerrow)).Interior.ColorIndex = 3 ' Red
+    Else
+        ws.Range("J" + CStr(tickerrow)).Interior.ColorIndex = 10 ' Green
+    End If
+
+    ws.Cells(1, 9).Value = "Ticker"
+    ws.Cells(1, 10).Value = "Yearly Change"
+    ws.Cells(1, 11).Value = "Percent Change"
+    ws.Cells(1, 12).Value = "Total Stock Volume"
+    
+Next ws
+
+End Sub
+
+
